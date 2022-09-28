@@ -7,11 +7,11 @@ from pymongo import MongoClient
 from __init__ import client
 
 raw_sample = {
-    "dialog_id": 0,
+    "game_session_id": 0,
     "turns": [
         {
             "turn_id": 0,
-            "timestamp": 0, #should be the corresponding name of the image
+            "image": 0, #should be the corresponding name of the image
             "sentences": [
                 {
                     "sentence_id": 0,
@@ -27,7 +27,7 @@ raw_sample = {
         },
         {
             "turn_id": 1,
-            "timestamp": 5,
+            "image": 5,
             "sentences": [
                 {
                     "sentence_id": 0,
@@ -40,7 +40,7 @@ raw_sample = {
 }
 
 annotated_sample = {
-    "dialog_id": 0,
+    "annotation_id": 0,
     "version": 0,
     "annotator_id": 0,
     "dialog_level_labels": [],
@@ -76,6 +76,22 @@ annotated_sample = {
     ]
 }
 
+session_anno = {
+    "annotator_game_session_id": 1,
+    "game_session_id": 2,
+    "assigned_annotator_id": [1,6,8],
+    "finished_annotator_id": [8],
+    "ongoing_annotator_id": [1,6]
+}
+
+anno_session = {
+    "annotator_game_session_id": 0,
+    "annotator_id": 7,
+    "assigned_session_id": [0,3,4],
+    "finished_session_id": [3],
+    "ongoing_session_id": [0]
+}
+
 def get_demo():
         # generate dialog id according to annotator id
     id = 0
@@ -86,12 +102,12 @@ def get_demo():
     dialog_id = dialog["dialog_id"]
     for turn in dialog["turns"]:
         turn_id = turn["turn_id"]
-        timestamp = turn["timestamp"]
+        image = turn["image"]
         for sentence in turn["sentences"]:
             container = dict()
             container["dialog_id"] = dialog_id
             container["turn_id"] = turn_id
-            container["timestamp"] = timestamp
+            container["image"] = image
             container["sentence_id"] = sentence["sentence_id"]
             container["content"] = sentence["content"]
             container["is_human"] = sentence["is_human"]
@@ -138,4 +154,5 @@ def save_demo():
     col.insert_one(dialog)
     return 200
 
-save_demo()
+col = client["annotator_game_session"]["annotator"]
+col.insert_one(anno_session)
